@@ -1,0 +1,16 @@
+[Unit]
+Description=Swellnest Custos — Telegram-Bot fuer Ausgaben-Notizen
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/swellnest-bot
+ExecStart=/usr/bin/python3 %h/swellnest-bot/custos.py
+Restart=always
+RestartSec=10
+StandardOutput=append:%h/swellnest-bot/logs/custos.log
+StandardError=append:%h/swellnest-bot/logs/custos.log
+
+[Install]
+WantedBy=default.target

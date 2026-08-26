@@ -1,0 +1,245 @@
+{
+ "generated_at": "2026-08-26T00:00:00",
+ "demo": true,
+ "currency": "EUR",
+ "houses": [
+  "Casa Ribeira",
+  "Swellnest",
+  "Casa Norte",
+  "Casa Foz"
+ ],
+ "entries": [
+  {
+   "ts": "2026-05-07T18:00:00",
+   "house": "Casa Foz",
+   "service": "pintura",
+   "service_label": "Painting",
+   "person": "Sergio",
+   "amount": 620
+  },
+  {
+   "ts": "2026-05-13T22:00:00",
+   "house": "Swellnest",
+   "service": "eletricidade",
+   "service_label": "Electrics",
+   "person": "Nuno",
+   "amount": 85
+  },
+  {
+   "ts": "2026-05-21T17:00:00",
+   "house": "Casa Ribeira",
+   "service": "esquentador",
+   "service_label": "Water heater",
+   "person": "Joao",
+   "amount": 180
+  },
+  {
+   "ts": "2026-05-26T15:00:00",
+   "house": "Casa Norte",
+   "service": "jardim",
+   "service_label": "Garden",
+   "person": "Bruno",
+   "amount": 60
+  },
+  {
+   "ts": "2026-05-29T21:00:00",
+   "house": "Casa Foz",
+   "service": "carpintaria",
+   "service_label": "Carpentry",
+   "person": "Paulo",
+   "amount": 310
+  },
+  {
+   "ts": "2026-06-03T23:00:00",
+   "house": "Swellnest",
+   "service": "estores",
+   "service_label": "Blinds",
+   "person": "Miguel",
+   "amount": 95
+  },
+  {
+   "ts": "2026-06-06T23:00:00",
+   "house": "Swellnest",
+   "service": "limpeza",
+   "service_label": "Deep clean",
+   "person": "Ana",
+   "amount": 140
+  },
+  {
+   "ts": "2026-06-12T16:00:00",
+   "house": "Casa Ribeira",
+   "service": "esquentador",
+   "service_label": "Water heater",
+   "person": "Joao",
+   "amount": 210
+  },
+  {
+   "ts": "2026-06-16T22:00:00",
+   "house": "Casa Norte",
+   "service": "canalizacao",
+   "service_label": "Plumbing",
+   "person": "Joao",
+   "amount": 140
+  },
+  {
+   "ts": "2026-06-21T00:00:00",
+   "house": "Casa Ribeira",
+   "service": "eletricidade",
+   "service_label": "Electrics",
+   "person": "Rui",
+   "amount": 95
+  },
+  {
+   "ts": "2026-06-25T17:00:00",
+   "house": "Casa Foz",
+   "service": "ar condicionado",
+   "service_label": "Air conditioning",
+   "person": "Tiago",
+   "amount": 420
+  },
+  {
+   "ts": "2026-06-29T23:00:00",
+   "house": "Swellnest",
+   "service": "canalizacao",
+   "service_label": "Plumbing",
+   "person": "Tiago",
+   "amount": 75
+  },
+  {
+   "ts": "2026-07-04T17:00:00",
+   "house": "Casa Norte",
+   "service": "eletricidade",
+   "service_label": "Electrics",
+   "person": "Nuno",
+   "amount": 110
+  },
+  {
+   "ts": "2026-07-08T15:00:00",
+   "house": "Casa Ribeira",
+   "service": "esquentador",
+   "service_label": "Water heater",
+   "person": "Joao",
+   "amount": 150
+  },
+  {
+   "ts": "2026-07-12T15:00:00",
+   "house": "Casa Foz",
+   "service": "limpeza",
+   "service_label": "Deep clean",
+   "person": "Ana",
+   "amount": 130
+  },
+  {
+   "ts": "2026-07-17T16:00:00",
+   "house": "Swellnest",
+   "service": "jardim",
+   "service_label": "Garden",
+   "person": "Bruno",
+   "amount": 70
+  },
+  {
+   "ts": "2026-07-21T21:00:00",
+   "house": "Casa Ribeira",
+   "service": "carpintaria",
+   "service_label": "Carpentry",
+   "person": "Paulo",
+   "amount": 260
+  },
+  {
+   "ts": "2026-07-25T20:00:00",
+   "house": "Swellnest",
+   "service": "estores",
+   "service_label": "Blinds",
+   "person": "Miguel",
+   "amount": 120
+  },
+  {
+   "ts": "2026-07-27T23:00:00",
+   "house": "Casa Foz",
+   "service": "eletricidade",
+   "service_label": "Electrics",
+   "person": "Rui",
+   "amount": 90
+  },
+  {
+   "ts": "2026-07-30T22:00:00",
+   "house": "Casa Norte",
+   "service": "canalizacao",
+   "service_label": "Plumbing",
+   "person": "Joao",
+   "amount": 165
+  },
+  {
+   "ts": "2026-08-03T23:00:00",
+   "house": "Swellnest",
+   "service": "ar condicionado",
+   "service_label": "Air conditioning",
+   "person": "Tiago",
+   "amount": 380
+  },
+  {
+   "ts": "2026-08-09T00:00:00",
+   "house": "Casa Ribeira",
+   "service": "esquentador",
+   "service_label": "Water heater",
+   "person": "Joao",
+   "amount": 240
+  },
+  {
+   "ts": "2026-08-11T20:00:00",
+   "house": "Casa Norte",
+   "service": "limpeza",
+   "service_label": "Deep clean",
+   "person": "Ana",
+   "amount": 120
+  },
+  {
+   "ts": "2026-08-14T16:00:00",
+   "house": "Casa Foz",
+   "service": "jardim",
+   "service_label": "Garden",
+   "person": "Bruno",
+   "amount": 65
+  },
+  {
+   "ts": "2026-08-16T22:00:00",
+   "house": "Casa Foz",
+   "service": "canalizacao",
+   "service_label": "Plumbing",
+   "person": "Joao",
+   "amount": null
+  },
+  {
+   "ts": "2026-08-18T17:00:00",
+   "house": "Swellnest",
+   "service": "pintura",
+   "service_label": "Painting",
+   "person": "Sergio",
+   "amount": 340
+  },
+  {
+   "ts": "2026-08-21T22:00:00",
+   "house": "Casa Ribeira",
+   "service": "limpeza",
+   "service_label": "Deep clean",
+   "person": "Ana",
+   "amount": 125
+  },
+  {
+   "ts": "2026-08-22T17:00:00",
+   "house": "Casa Norte",
+   "service": "estores",
+   "service_label": "Blinds",
+   "person": "Miguel",
+   "amount": null
+  },
+  {
+   "ts": "2026-08-23T22:00:00",
+   "house": "Casa Norte",
+   "service": "carpintaria",
+   "service_label": "Carpentry",
+   "person": "Paulo",
+   "amount": 190
+  }
+ ]
+}
