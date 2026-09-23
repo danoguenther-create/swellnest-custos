@@ -29,6 +29,13 @@ Three seconds later:
 That last line is the point. It is not a time saving — it is information that did not exist
 before, delivered early enough to act on.
 
+Past jobs can be backfilled by adding a date — `Casa Ribeira, esquentador, João, 180, 12/08` —
+so the first session can already surface repeats from the last few months instead of starting
+from an empty ledger. Relative dates (`ontem`) work too.
+
+Job names are mapped to one fixed term per trade, so `boiler`, `caldeira` and `esquentador` all
+count as the same recurring problem.
+
 ## Dashboard
 
 **[View the dashboard →](https://danoguenther-create.github.io/swellnest-custos/)**
@@ -45,7 +52,9 @@ demo data**; no real figures are in this repository.
 | Parsing | The local `claude` CLI turns loose Portuguese into structured fields — it resolves `cento e oitenta` to `180` and strips `outra vez` from the job name, which a naive parser would keep (and then miss the repeat) |
 | Fallback | If the CLI is unavailable, a deterministic comma parser takes over and the reply says so |
 | Storage | SQLite, one table |
-| Reporting | `/casas`, `/mes`, `/ultimos`, `/apagar` |
+| Reporting | `/casas` (last 90 days), `/mes`, `/ultimos`, `/apagar` (own entries only) |
+| Access | Allowlist of chat IDs, **fail-closed**: an empty or broken list means nobody gets in |
+| Limits | Every free-text message costs one model call, so length (300 chars) and volume (40/hour, 150/day per chat) are capped; the admin is notified once a day when a chat hits the cap |
 
 **No amount is ever guessed.** If the value is unclear the entry is stored without one and
 flagged. A ledger that is 80% complete but silently wrong is worse than one with visible gaps —
