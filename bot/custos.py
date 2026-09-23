@@ -20,12 +20,16 @@ import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import shutil
+
 import requests
 
 ENV_PATH = Path(__file__).with_name(".env")
 API = "https://api.telegram.org/bot{token}/{method}"
 REPEAT_WINDOW_DAYS = 90
 CLAUDE_TIMEOUT = 60
+# systemd-User-Dienste haben ~/.local/bin nicht im PATH — deshalb absolut aufloesen.
+CLAUDE_BIN = shutil.which("claude") or str(Path.home() / ".local/bin/claude")
 
 
 # ---------------------------------------------------------------- Konfiguration
@@ -119,7 +123,7 @@ Notiz: {text}"""
 def parse_with_claude(text):
     try:
         proc = subprocess.run(
-            ["claude", "-p", PARSE_PROMPT.format(text=text)],
+            [CLAUDE_BIN, "-p", PARSE_PROMPT.format(text=text)],
             capture_output=True, text=True, timeout=CLAUDE_TIMEOUT,
         )
     except (subprocess.TimeoutExpired, FileNotFoundError):
@@ -280,7 +284,8 @@ def cmd_ultimos(conn, chat_id):
 
 
 def cmd_apagar(conn, chat_id):
-    row = conn.execute("SELECT * FROM entries ORDER BY id DESC LIMIT 1").fetchone()
+    row = conn.execute("SELECT * FROM entries WHERE chat_id=? ORDER BY id DESC LIMIT 1",
+                       (chat_id,)).fetchone()
     if not row:
         return send(chat_id, "Nada para apagar.")
     conn.execute("DELETE FROM entries WHERE id=?", (row["id"],))
@@ -290,11 +295,14 @@ def cmd_apagar(conn, chat_id):
 
 def handle(conn, message):
     chat_id = message["chat"]["id"]
-    text = (message.get("text") or "").strip()
-    if not text:
-        return
     if ALLOWED and chat_id not in ALLOWED:
         print(f"[info] ignoriert: chat {chat_id}", flush=True)
+        return
+    if any(k in message for k in ("voice", "audio", "video_note")):
+        return send(chat_id, "🎙 Por agora só percebo texto. Escreve assim:\n"
+                             "Casa Ribeira, esquentador, João, 180")
+    text = (message.get("text") or "").strip()
+    if not text:
         return
 
     low = text.lower()
@@ -323,6 +331,10 @@ def handle(conn, message):
         cents = None
 
     servico = (data.get("servico") or "").strip() or None
+    if cents is None and servico is None:
+        return send(chat_id, "Não registei nada — falta o trabalho ou o valor. Exemplo:\n"
+                             "Casa Ribeira, esquentador, João, 180")
+
     cur = conn.execute(
         "INSERT INTO entries (ts, chat_id, casa, casa_key, servico, servico_key, pessoa, cents, raw, parser)"
         " VALUES (?,?,?,?,?,?,?,?,?,?)",
