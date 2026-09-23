@@ -15,6 +15,7 @@ import re
 import sqlite3
 import subprocess
 import sys
+import tempfile
 import time
 import unicodedata
 from datetime import datetime, timedelta, timezone
@@ -30,6 +31,18 @@ REPEAT_WINDOW_DAYS = 90
 CLAUDE_TIMEOUT = 60
 # systemd-User-Dienste haben ~/.local/bin nicht im PATH — deshalb absolut aufloesen.
 CLAUDE_BIN = shutil.which("claude") or str(Path.home() / ".local/bin/claude")
+# Der Parser bekommt kein Werkzeug, keine MCP-Server, keine Settings/Hooks und laeuft in
+# einem leeren Verzeichnis — er sieht nur den Nachrichtentext, nie die .env daneben.
+CLAUDE_ARGS = ["-p", "--tools", "", "--strict-mcp-config", "--no-session-persistence",
+               "--setting-sources", ""]
+SANDBOX = tempfile.mkdtemp(prefix="custos-parse-")
+
+
+def log(level, msg):
+    """Eine Zeile mit Zeitstempel. Bewusst ohne Nachrichteninhalt: keine Betraege im Log."""
+    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    print(f"{stamp} [{level}] {msg}", file=sys.stderr if level in ("warn", "error") else sys.stdout,
+          flush=True)
 
 
 # ---------------------------------------------------------------- Konfiguration
@@ -121,23 +134,30 @@ Notiz: {text}"""
 
 
 def parse_with_claude(text):
+    # Prompt als letztes Argument: --tools nimmt eine Liste und wuerde es sonst schlucken.
     try:
         proc = subprocess.run(
-            [CLAUDE_BIN, "-p", PARSE_PROMPT.format(text=text)],
-            capture_output=True, text=True, timeout=CLAUDE_TIMEOUT,
+            [CLAUDE_BIN, *CLAUDE_ARGS, PARSE_PROMPT.format(text=text)],
+            capture_output=True, text=True, timeout=CLAUDE_TIMEOUT, cwd=SANDBOX,
         )
-    except (subprocess.TimeoutExpired, FileNotFoundError):
+    except subprocess.TimeoutExpired:
+        log("warn", f"claude: Timeout nach {CLAUDE_TIMEOUT}s — Fallback-Parser")
+        return None
+    except FileNotFoundError:
+        log("warn", f"claude nicht gefunden unter {CLAUDE_BIN} — Fallback-Parser")
         return None
     if proc.returncode != 0:
+        log("warn", f"claude: Exit {proc.returncode} — Fallback-Parser")
         return None
     match = re.search(r"\{.*\}", proc.stdout, re.S)
-    if not match:
-        return None
     try:
-        data = json.loads(match.group(0))
+        data = json.loads(match.group(0)) if match else None
     except json.JSONDecodeError:
+        data = None
+    if not isinstance(data, dict):
+        log("warn", "claude: kein JSON in der Antwort — Fallback-Parser")
         return None
-    return data if isinstance(data, dict) else None
+    return data
 
 
 def parse_fallback(text):
@@ -231,7 +251,7 @@ def call(method, **params):
         resp = requests.post(API.format(token=TOKEN, method=method), data=params, timeout=70)
         return resp.json()
     except requests.RequestException as exc:
-        print(f"[warn] {method}: {exc}", file=sys.stderr, flush=True)
+        log("warn", f"{method}: {exc}")
         return {"ok": False}
 
 
@@ -296,7 +316,7 @@ def cmd_apagar(conn, chat_id):
 def handle(conn, message):
     chat_id = message["chat"]["id"]
     if ALLOWED and chat_id not in ALLOWED:
-        print(f"[info] ignoriert: chat {chat_id}", flush=True)
+        log("info", f"ignoriert: chat {chat_id}")
         return
     if any(k in message for k in ("voice", "audio", "video_note")):
         return send(chat_id, "🎙 Por agora só percebo texto. Escreve assim:\n"
@@ -341,12 +361,14 @@ def handle(conn, message):
         (datetime.now(timezone.utc).isoformat(), chat_id, casa, norm(casa), servico,
          norm(servico), (data.get("pessoa") or "").strip() or None, cents, text, parser))
     conn.commit()
+    log("entry", f"id={cur.lastrowid} chat={chat_id} parser={parser}")
     send(chat_id, render_entry(conn, cur.lastrowid))
 
 
 def main():
     conn = db()
-    print(f"[start] Swellnest Custos · db={DB_PATH} · allowlist={sorted(ALLOWED) or 'offen'}", flush=True)
+    log("start", f"Swellnest Custos · db={DB_PATH} · allowlist={sorted(ALLOWED) or 'offen'}"
+                 f" · parser={CLAUDE_BIN}")
     while True:
         result = call("getUpdates", offset=get_offset(conn), timeout=50,
                       allowed_updates=json.dumps(["message"]))
@@ -360,7 +382,7 @@ def main():
                 try:
                     handle(conn, message)
                 except Exception as exc:  # ein kaputter Eintrag darf den Bot nicht stoppen
-                    print(f"[error] {exc!r}", file=sys.stderr, flush=True)
+                    log("error", repr(exc))
 
 
 if __name__ == "__main__":

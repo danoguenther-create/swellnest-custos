@@ -72,11 +72,18 @@ python3 bot/custos.py
 Parsing uses whatever `claude` login exists on the machine, so no API key is required. Without
 the CLI the bot still runs on the fallback parser.
 
-To refresh the dashboard from real data:
+To export real data for the dashboard:
 
 ```bash
-python3 tools/export_dashboard.py ~/swellnest-bot/custos.sqlite3
+python3 tools/export_dashboard.py            # -> ~/swellnest-bot/export/data.json
 ```
+
+The export deliberately writes **outside** this repository and refuses any path inside it:
+`docs/` is public on GitHub Pages, so one careless push would publish real figures. Serve the
+exported file privately (for example next to a copy of `docs/index.html` on the VPS).
+
+The parser call is isolated: no tools, no MCP servers, no settings or hooks, no session
+persistence, and an empty working directory. It only ever sees the message text.
 
 ## Status
 
